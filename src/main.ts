@@ -18,6 +18,7 @@ import InputText from 'primevue/inputtext';
 import ToastService from 'primevue/toastservice';
 import Toast from 'primevue/toast';
 import ProgressSpinner from 'primevue/progressspinner';
+import Card from 'primevue/card';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA29nlZG8Gt0USUQkABE0HAhWDjLzAof-Y",
@@ -68,5 +69,6 @@ app.component('app-button', Button);
 app.component('app-input-text', InputText);
 app.component('app-toast', Toast);
 app.component('app-progress', ProgressSpinner);
+app.component('app-card', Card);
 
 app.mount('#app')

@@ -86,7 +86,7 @@ const submitForm = (): void => {
         <app-button
           :label="submitButtonText"
           type="submit"
-          icon="pi pi-user"
+          icon="pi pi-user"§
           :loading="isLoading"
           class="w-full bg-primary-600"
         ></app-button>
