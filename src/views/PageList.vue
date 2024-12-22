@@ -20,6 +20,12 @@ const submitFilter = async (): Promise<void> => {
   interviews.value = listInterviews;
   isLoading.value = false;
 }
+const clearFilter = async (): Promise<void> => {
+  isLoading.value = true;
+  const listInterviews: Array<IInterview> = await getAllInterviews()
+  interviews.value = listInterviews;
+  isLoading.value = false;
+}
 
 const getAllInterviews = async <T extends IInterview>(isFilter?: boolean): Promise<T[]> => {
   let getData;
@@ -101,7 +107,7 @@ onMounted(() => {
         <label for="interviewResult2" class="ml-2">Offer</label>
       </div>
       <app-button variant="text" class="mr-2" @click="submitFilter" :disabled="!selectedFilterResult">Apply</app-button>
-      <app-button severity="danger" variant="text" class="mr-2" :disabled="!selectedFilterResult">Reset</app-button>
+      <app-button severity="danger" variant="text" class="mr-2" :disabled="!selectedFilterResult" @click="clearFilter">Reset</app-button>
     </div>
 
     <app-datatable :value="interviews">
