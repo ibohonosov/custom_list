@@ -7,4 +7,7 @@ export default {
     extend: {},
   },
   plugins: [tailwindcssPrimeui],
+  corePlugins: {
+    preflight: false, // Вимкнути базові стилі Tailwind
+  },
 };

@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import {getFirestore, doc, getDoc, updateDoc} from "firebase/firestore";
+import {getFirestore, doc, getDoc, updateDoc, Timestamp} from "firebase/firestore";
 import {useUserStore} from "@/stores/user.ts";
 import type {IInterview, IStage} from "@/interfaces.ts";
 import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
-import dayjs from "dayjs"
-
 
 const route = useRoute();
 const db = getFirestore();
@@ -19,23 +17,41 @@ const docRef = doc(db, `users/${userStore.userId}/interviews`, route.params.id a
 const getData = async (): Promise<void> => {
   isLoading.value = true;
   const docSnap = await getDoc(docRef);
-  interview.value = docSnap.data() as IInterview;
+
+  if (docSnap.exists()) {
+    const data = docSnap.data() as IInterview;
+
+    if (data.stages && data.stages.length) {
+      data.stages = data.stages.map((stage): IStage => {
+        if (stage.date && stage.date instanceof Timestamp) {
+          return {
+            ...stage,
+            date: stage.date.toDate()
+          }
+        }
+        return stage;
+      })
+    }
+    interview.value = data;
+  }
+
+
   isLoading.value = false;
   console.log(interview.value);
 }
 
 const saveInterview = async (): Promise<void> => {
   isLoading.value = true;
-  if (interview.value?.stages && interview.value.stages.length > 0) {
-    // const date = interview.value.stages[index].date;
-    // interview.value.stages[index].date = dayjs(date).format('DD.MM.YYYY');
-    interview.value.stages = interview.value.stages.map((stage: IStage) => {
-      return {
-        ...stage,
-        date: dayjs(stage.date).format('DD.MM.YYYY')
-      }
-    })
-  }
+  // if (interview.value?.stages && interview.value.stages.length > 0) {
+  //   // const date = interview.value.stages[index].date;
+  //   // interview.value.stages[index].date = dayjs(date).format('DD.MM.YYYY');
+  //   interview.value.stages = interview.value.stages.map((stage: IStage) => {
+  //     return {
+  //       ...stage,
+  //       date: dayjs(stage.date).format('DD.MM.YYYY')
+  //     }
+  //   })
+  // }
   await updateDoc(docRef, {...interview.value})
   await getData();
 }
@@ -44,7 +60,7 @@ const addStage = () => {
     if (!interview.value.stages) {
       interview.value.stages = [];
     }
-    interview.value.stages.push({ name: '', date: '', description: ''});
+    interview.value.stages.push({ name: '', date: null, description: ''});
   }
 }
 const removeStage = (index: number) => {
@@ -74,7 +90,7 @@ onMounted(async () => await getData())
 <template>
   <app-progress v-if="isLoading"/>
   <div class="content-interview" v-else-if="(interview?.id && !isLoading)">
-    {{interview}}
+<!--    {{interview}}-->
     <app-card>
       <template #title>Interview in Company {{interview.company}}</template>
       <template #content>
@@ -111,7 +127,7 @@ onMounted(async () => await getData())
           </div>
         </div>
 
-        <app-button label="Add stage" severity="info" icon="pi pi-plus" class="mb-3" @click="addStage"/>
+        <app-button label="Add stage" severity="info" icon="pi pi-plus" variant="text" class="mb-3" @click="addStage"/>
         <template v-if="interview.stages">
           <div v-for="(stage, index) in interview.stages" :key="index" class="interview-stage">
             <div class="flex flex-col gap-2">
@@ -120,14 +136,13 @@ onMounted(async () => await getData())
             </div>
             <div class="flex flex-col gap-2">
               <label :for="`stage-date-${index}`">Date stage passing</label>
-<!--              @date-select="saveDateStage(index)"-->
               <app-datepicker class="input mb-3" :id="`stage-date-${index}`" dateFormat="dd.mm.yy" v-model="stage.date" />
             </div>
             <div class="flex flex-col gap-2">
               <label :for="`stage-description-${index}`">Commentary</label>
               <app-textarea class="input mb-3" :id="`stage-description-${index}`" rows="5" v-model="stage.description"/>
             </div>
-            <app-button severity="danger" label="Delete stage" @click="removeStage(index)"/>
+            <app-button severity="danger" label="Delete stage" icon="pi pi-trash" variant="text" @click="removeStage(index)"/>
           </div>
         </template>
         <div class="flex flex-wrap gap-3 mb-3">
@@ -140,7 +155,7 @@ onMounted(async () => await getData())
             <label for="interviewResult2" class="ml-2">Offer</label>
           </div>
         </div>
-        <app-button label="Save" icon="pi pi-save" severity="success"  @click="saveInterview"/>
+        <app-button label="Save" icon="pi pi-save" severity="success" variant="text"  @click="saveInterview"/>
       </template>
     </app-card>
   </div>

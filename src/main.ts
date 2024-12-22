@@ -9,6 +9,7 @@ import { createPinia } from 'pinia'
 import { initializeApp } from "firebase/app";
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from "primevue/confirmationservice";
+import Tooltip from 'primevue/tooltip';
 import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config';
@@ -28,6 +29,8 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import DatePicker from 'primevue/datepicker';
 import RadioButton from 'primevue/radiobutton';
+import Badge from 'primevue/badge';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyA29nlZG8Gt0USUQkABE0HAhWDjLzAof-Y",
@@ -74,6 +77,7 @@ app.use(PrimeVue, {
     }
   }
 });
+app.directive('tooltip',Tooltip)
 app.component('app-menubar', Menubar);
 app.component('app-button', Button);
 app.component('app-input-text', InputText);
@@ -88,5 +92,7 @@ app.component('app-input-number', InputNumber);
 app.component('app-textarea', Textarea);
 app.component('app-datepicker', DatePicker);
 app.component('app-radio', RadioButton);
+app.component('app-badge', Badge);
+
 
 app.mount('#app')
