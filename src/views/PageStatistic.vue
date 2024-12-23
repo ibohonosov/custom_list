@@ -17,10 +17,10 @@ const db = getFirestore();
 const interviews = ref<IInterview[]>([])
 
 const chartData = ref();
-const chartOptions = ref(null);
+const chartOptions = ref();
 
 const getAllInterviews = async <T extends IInterview>(): Promise<T[]> => {
-  let getData = query(
+  const getData = query(
       collection(db,`users/${userStore.userId}/interviews`),
       orderBy('createdAt', 'desc')
     );
